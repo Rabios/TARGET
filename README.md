@@ -36,11 +36,15 @@ The game should work on desktop with any OS and following architectures: x86 and
 - Left mouse button: shoot/select.
 - Right mouse button: Pauses the game if in-game, Back to main menu if in menus.
 
+> NOTES: You might need to enable mouse controls via `options.lua` (Game options file)
+
 ### Controls (Gamepad)
 
 - Move player with DPAD
 - Y button: shoot/select.
 - B button: Pauses the game if in-game, Back to main menu if in menus.
+
+> NOTES: You might need to enable gamepad controls via `options.lua` (Game options file)
 
 ### About game options
 
