@@ -52,7 +52,7 @@ Options menu is in my plans, Currently you can edit game options from `options.l
 
 ### Known game problems
 
-1. Frame rate drop issues: Cause of bullets shoot by player, This easily solved by not shooting always or shooting when need for that like boss fights.
+1. Frame rate drop issues: The might happen sometimes cause of bullets shoot by player, This easily solved by stop shooting for short time or shooting when need for that like boss fights.
 
 ### TODO (Soon)
 
