@@ -20,6 +20,10 @@ The game features short 3 levels that in total don't last more than over 10 to 2
 
 Just grab LuaJIT compiler distribution/binaries (Like ULua), Then run `main.lua` with it.
 
+The game should work on desktop with any OS and following architectures: x86 and x64.
+
+> WARNING: The game requires OpenGL 3.3 to run.
+
 ### Controls (Keyboard)
 
 - WASD/Arrow keys: move.
@@ -50,6 +54,7 @@ Options menu is in my plans, Currently you can edit game options from `options.l
 
 This game is my second game, I would like to improve it soon when i have time for it.
 
+- [ ] Game songs/soundtrack (Currently game has sounds).
 - [ ] Options menu.
 - [ ] Add commented stuff in `assets.lua` (It can be update for game)
 - [ ] Better support for game resolutions.
