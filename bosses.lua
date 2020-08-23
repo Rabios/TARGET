@@ -2,6 +2,12 @@
 -- TARGET! bosses logic!
 
 bosses_timers = { boss_1 = 0, boss_2 = 0, boss_3 = 0 } -- Bosses timers, To do their actions
+
+-- When bosses dead, They left heal bag!
+-- Heals 50 (Easy mode), 25 (Hard mode)
+healbag = { x = 0, y = 0, w = 64, h = 64, draw = false }
+portal = { x = 0, y = 0, w = 64, h = 64, draw = false }
+
 boss_1 = {
   health = 2000,
   image = enemy1_image,
@@ -14,7 +20,7 @@ boss_1 = {
 }
 
 boss_2 = {
-  health = 4000,
+  health = 3000,
   image = enemy7_image,
   moved = false,
   alive = true,
@@ -25,7 +31,7 @@ boss_2 = {
 }
 
 boss_3 = {
-  health = 5000,
+  health = 2000,
   image = enemy4_image,
   moved = false,
   alive = true,
@@ -43,7 +49,7 @@ boss_3 = {
   }
 }
 
-function randomize_laser_position()
+local function randomize_laser_position()
   for l in ipairs(boss_3.lasers) do
     boss_3.lasers[l].start = rl.Vector2(boss_3.x, boss_3.y)
     boss_3.lasers[l].finish = rl.Vector2(rl.GetRandomValue(-rl.GetScreenWidth(), rl.GetScreenWidth() / 1.5), rl.GetRandomValue(0, rl.GetScreenHeight()))
@@ -60,7 +66,6 @@ boss_2.y = (rl.GetScreenHeight() - 256) / 2
 boss_3.x = rl.GetScreenWidth() - 256
 boss_3.y = (rl.GetScreenHeight() - 256) / 2
 
--- TODO: Bosses logic
 function boss1_logic()
   if boss_1.alive then
     rl.DrawRectangle(0, 0, boss_1.health, 10, rl.RED)
@@ -69,7 +74,7 @@ function boss1_logic()
       for i = 1, boss_1.helpers, 1 do
         table.insert(enemies.level_1, {
           type = "eye",
-          x = boss_1.x - (256 * 2),
+          x = boss_1.x + (256 * 2),
           y = rl.GetRandomValue(0, 8) * 100,
           health = 100,
           timer = 0,
@@ -114,7 +119,12 @@ function boss1_logic()
         rl.SaveStorageValue(LEVEL1_FINISHED, 1)
         rl.SaveStorageValue(CURRENT_LEVEL, 2)
         rl.SaveStorageValue(LEVEL1_SCORE, score)
+        rl.SaveStorageValue(SHIPS, ships)
+        rl.SaveStorageValue(HEALTH, health)
         rl.SaveStorageValue(DIFFICULTY, difficulty)
+        healbag.draw = true
+        healbag.x = boss_2.x
+        healbag.y = boss_2.y + 128
         scores_saved[1] = true
       end
     end
@@ -132,7 +142,7 @@ function boss2_logic()
       for i = 1, boss_2.helpers * 4, 1 do
         table.insert(enemies.level_2, {
           type = "ship",
-          x = boss_2.x - (256 * 2),
+          x = boss_2.x + (256 * 2),
           y = rl.GetRandomValue(0, 8) * 100,
           health = 100,
           timer = 0,
@@ -178,6 +188,11 @@ function boss2_logic()
         rl.SaveStorageValue(CURRENT_LEVEL, 3)
         rl.SaveStorageValue(LEVEL2_SCORE, score - rl.LoadStorageValue(LEVEL1_SCORE))
         rl.SaveStorageValue(DIFFICULTY, difficulty)
+        rl.SaveStorageValue(SHIPS, ships)
+        rl.SaveStorageValue(HEALTH, health)
+        healbag.draw = true
+        healbag.x = boss_2.x
+        healbag.y = boss_2.y + 128
         scores_saved[2] = true
       end
     end
@@ -208,7 +223,7 @@ function boss3_logic()
       for i = 1, boss_3.helpers, 1 do
         table.insert(enemies.level_3, {
           type = "lasership",
-          x = boss_3.x - (256 * 2),
+          x = boss_3.x + (256 * 2),
           y = rl.GetRandomValue(0, 4) * 272,
           health = 100,
           timer = 0,
@@ -231,6 +246,17 @@ function boss3_logic()
           player.combo = 0
           play_hit_sound()
         end
+        
+        -- Bullets collision with lasers, It removes bullets collided.
+        -- That's better for game i see :)
+        for b in ipairs(bullets) do
+          if bullets[b] and bullets[b].x and bullets[b].y then
+            if rl.CheckCollisionLineRec(boss_3.lasers[l].start.x, boss_3.lasers[l].start.y, boss_3.lasers[l].finish.x, boss_3.lasers[l].finish.y, bullets[b].x, bullets[b].y, bullet_size.w, bullet_size.h) then
+              table.remove(bullets, b)
+            end
+          end
+        end
+        
       end
     end
     
@@ -265,14 +291,17 @@ function boss3_logic()
       boss_3.health = 0
       boss_3.alive = false
       level = 3
-      if not scores_saved[2] then
+      if not scores_saved[3] then
         rl.SaveStorageValue(LEVEL3_FINISHED, 1)
         rl.SaveStorageValue(CURRENT_LEVEL, 3)
         rl.SaveStorageValue(LEVEL3_SCORE, score - rl.LoadStorageValue(LEVEL2_SCORE))
+        rl.SaveStorageValue(SHIPS, ships)
+        rl.SaveStorageValue(HEALTH, health)
         rl.SaveStorageValue(DIFFICULTY, difficulty)
-        scores_saved[2] = true
-        paused = true
-        current_scene = 5
+        portal.x = boss_3.x
+        portal.y = boss_3.y + 128
+        portal.draw = true
+        scores_saved[3] = true
       end
     end
     

@@ -19,9 +19,8 @@ function set_game_difficulty(d)
     speed = 5
     shot_damage = 20
     hit1_damage = 1
-    hit2_damage = 3
-    hit3_damage = 5
-    hit4_damage = 10
+    hit2_damage = 5
+    hit3_damage = 10
     heal = 50
     shots_limit = 1
     
@@ -30,29 +29,35 @@ function set_game_difficulty(d)
     player.alive = true
     paused = false
     health = 100
-    ships = 5
+    ships = 10
     speed = 8
     shot_damage = 20
-    hit1_damage = 3
-    hit2_damage = 5
-    hit3_damage = 10
-    hit4_damage = 13
-    heal = 50
+    hit1_damage = 5
+    hit2_damage = 10
+    hit3_damage = 20
+    heal = 25
     shots_limit = 3
   end
   
 end
 
+local function make_stars()
+  stars = {}
+  generate_stars(2000)
+end
+
 -- To reset game data
 function reset_game_data()
   rl.SaveStorageValue(HIGHSCORE, 0)
-  rl.SaveStorageValue(LEVEL2_FINISHED, 0)
   rl.SaveStorageValue(CURRENT_LEVEL, 1)
   rl.SaveStorageValue(LEVEL1_FINISHED, 0)
+  rl.SaveStorageValue(LEVEL2_FINISHED, 0)
   rl.SaveStorageValue(LEVEL3_FINISHED, 0)
   rl.SaveStorageValue(LEVEL1_SCORE, 0)
   rl.SaveStorageValue(LEVEL2_SCORE, 0)
   rl.SaveStorageValue(LEVEL3_SCORE, 0)
+  rl.SaveStorageValue(HEALTH, health)
+  rl.SaveStorageValue(SHIPS, ships)
   bosses_timers = { boss_1 = 0, boss_2 = 0, boss_3 = 0 }
   timers = { level_1 = 0, level_2 = 0, level_3 = 0, game_over = 0 }
   reset_player_position()
@@ -61,7 +66,7 @@ function reset_game_data()
   bullets = {}
   enemies_bullets = {}
   lasers = {}
-  generate_stars(2000)
+  make_stars()
   set_game_difficulty(difficulty)
   generate_enemies(difficulty)
   score = 0
@@ -80,7 +85,7 @@ function load_gameplay_info(difficulty)
   bullets = {}
   enemies_bullets = {}
   lasers = {}
-  generate_stars(2000)
+  make_stars()
   reset_player_position()
   set_game_difficulty(difficulty)
   generate_enemies(difficulty)

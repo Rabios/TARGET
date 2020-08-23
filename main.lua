@@ -3,13 +3,13 @@
 local rl = require("raylib")  -- Load raylib library
 
 -- Game info
-game = {
-  author = "Rabia Alhaffar",
-  build_date = "23/August/2020",
-  version = "v0.1 BETA",
-  debug_info = "DEBUG: OpenGL: 3.3, OS: "..ffi.os..", ARCH: "..ffi.arch
+TARGET = {
+  _AUTHOR = "Rabia Alhaffar",
+  _URL = "https://github.com/Rabios/TARGET",
+  _DATE = "23/August/2020",
+  _VERSION = "v0.2 BETA",
+  _INFO = "INFO: OpenGL: 3.3, OS: "..ffi.os..", ARCH: "..ffi.arch
 }
-
 
 HIGHSCORE = 0                 -- Highscore saving score position to storage
 CURRENT_LEVEL = 1             -- Current level saving position to storage
@@ -17,10 +17,11 @@ LEVEL1_FINISHED = 2           -- If game level 1 finished position to storage
 LEVEL2_FINISHED = 3           -- If game level 2 finished position to storage
 LEVEL3_FINISHED = 4           -- If game level 3 finished position to storage
 DIFFICULTY = 5                -- Difficulty to get saved/loaded by game position to storage
-LEVEL1_SCORE = 6              -- Level 1 score
-LEVEL2_SCORE = 7              -- Level 2 score
-LEVEL3_SCORE = 8              -- Level 3 score
-total_score = 0               -- All score to be then saved as summary of 3 levels, Each level sums with this value
+LEVEL1_SCORE = 6              -- Level 1 score position to storage
+LEVEL2_SCORE = 7              -- Level 2 score position to storage
+LEVEL3_SCORE = 8              -- Level 3 score position to storage
+HEALTH = 9                    -- Health position to storage
+SHIPS = 10                    -- Ships position to storage
 
 scores_saved = { false, false, false } -- For not loop score saving
 
@@ -37,7 +38,6 @@ shot_damage = 20        -- Damage caused by player shooting
 hit1_damage = 1         -- Damage by simple enemies and potato difficulty enemies
 hit2_damage = 5         -- Damage by boss 1 and easy difficulty enemies
 hit3_damage = 10        -- Damage by boss 2 and medium difficulty enemies
-hit4_damage = 20        -- Damage by boss 3 and hard difficulty enemies
 heal = 50               -- Heal to be healed by stuff
 shots_limit = 2         -- Limit of shots by eye monster
 

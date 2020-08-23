@@ -41,8 +41,8 @@ The game should work on desktop with any OS and following architectures: x86 and
 ### Controls (Gamepad)
 
 - Move player with DPAD
-- Y button: shoot/select.
-- B button: Pauses the game if in-game, Back to main menu if in menus.
+- Y/Triangle button: shoot/select.
+- B/O button: Pauses the game if in-game, Back to main menu if in menus.
 
 > NOTES: You might need to enable gamepad controls via `options.lua` (Game options file)
 
@@ -50,16 +50,13 @@ The game should work on desktop with any OS and following architectures: x86 and
 
 Options menu is in my plans, Currently you can edit game options from `options.lua` and run game again to apply options.
 
-### Known game problems
-
-1. Frame rate drop issues: The might happen sometimes cause of bullets shoot by player, This easily solved by stop shooting for short time or shooting when need for that like boss fights.
-
 ### TODO (Soon)
 
 This game is my second game, I would like to improve it soon when i have time for it.
 
 - [ ] Game songs/soundtrack (Currently game has sounds).
 - [ ] Options menu.
+- [ ] Adding simple GUI for game over and game pause scenes.
 - [ ] Add commented stuff in `assets.lua` (It can be update for game)
 - [ ] Better support for game resolutions.
 - [ ] Better enemies and boss fights (Bosses and enemies can be better).

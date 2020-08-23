@@ -1,24 +1,40 @@
 -- Written by Rabia Alhaffar in 19/August/2020
 -- TARGET! game scenes!
-scenes_timer = 0  -- Timer to switch between some of game scenes
-started = 0
-gameover_sound1 = 0
-gameover_sound2 = 0
+local scenes_timer = 0  -- Timer to switch between some of game scenes
+local started = 0
+local gameover_sound1 = 0
+local gameover_sound2 = 0
+local selecting = 1
+local choices = 4
+local textfade = 0.0
+local difficulty_menu = false
 difficulty = 0
-selecting = 1
 level = 1
-difficulty_menu = false
 paused = false
-textfade = 0.0
-choices = 4
 
 -- For drawing using for-loop
 local menu_texts = { "NEW GAME", "LOAD GAME", "CREDITS", "EXIT" }
+local gameover_texts = { "RESTART LEVEL", "BACK TO MAIN MENU" }
 local difficulty_texts = { "EASY", "HARD" }
 local difficulty_colors = { rl.GREEN, rl.RED }
+local pause_menu_texts = { "RESUME", "BACK TO MENU", "OPTIONS", "EXIT" }
+
+-- Timers
 local timers = { level_1 = 0, level_2 = 0, level_3 = 0, game_over = 0 }
 local bosses_summoned = { level_1 = false, level_2 = false, level_3 = false }
-local pause_menu_texts = { "RESUME", "BACK TO MENU", "OPTIONS", "EXIT" }
+
+local back_text = "" -- Back text, Depending on controls!
+
+if (not mouse_input and not gamepad_input) then
+  back_text = "[ESCAPE KEY]: BACK/RESUME"
+else
+  if mouse_input then
+    back_text = "[LEFT MOUSE BUTTON]: BACK/RESUME"
+  elseif gamepad_input then
+    back_text = "[B/O BUTTON]: BACK/RESUME"
+  end
+end
+
 
 local function update_game()
   update_stars()
@@ -28,15 +44,18 @@ local function update_game()
   update_enemies()
   update_enemies_bullets()
   draw_player()
-  player_logic()  
+  player_logic()
   draw_score()
+  update_heal()
+  update_portal()
 end
 
-function reset_game()
+local function reset_game()
   reset_game_data()
 end
 
-function mouse_gui()
+local function mouse_gui1()
+  rl.ShowCursor()
   if rl.CheckCollisionRecs(rl.Rectangle(rl.GetMouseX(), rl.GetMouseY(), 1, 1), rl.Rectangle(0, 300, rl.GetScreenWidth(), 100)) then
     selecting = 1
   end
@@ -87,6 +106,7 @@ scenes = {
     rl.BeginDrawing()
     rl.ClearBackground(rl.BLACK)
     rl.DrawText("TARGET!", (rl.GetScreenWidth() - rl.MeasureText("TARGET!", 96)) / 2, rl.GetScreenHeight() / 10, 96, flash())
+    rl.DrawText(TARGET._VERSION, 10, rl.GetScreenHeight() - 32, 32, rl.WHITE)
     rl.DrawRectangle(0, (selecting * 100) + 200, rl.GetScreenWidth(), 100, rl.GRAY)
     
     -- Draw centered selections
@@ -103,10 +123,10 @@ scenes = {
         rl.DrawText(difficulty_texts[d], (rl.GetScreenWidth() - rl.MeasureText(difficulty_texts[d], 48)) / 2, (d * 100) + 200 + 24, 48, difficulty_colors[d])
       end
     end
-    rl.DrawText("[ESCAPE KEY]: BACK", (rl.GetScreenWidth() - rl.MeasureText("[ESCAPE KEY]: BACK", 32)) / 1.02, 32, 32, rl.WHITE)
+    rl.DrawText(back_text, (rl.GetScreenWidth() - rl.MeasureText(back_text, 32)) / 1.02, rl.GetScreenHeight() - 32, 32, rl.WHITE)
     rl.EndDrawing()
     
-    if mouse_input then mouse_gui() end
+    if mouse_input then mouse_gui1() end
     
     -- If Arrow up/W key pressed or Arrow down/S, Go in selections!
     -- Gamepad and mouse integration supported!
@@ -156,6 +176,8 @@ scenes = {
             boss_1.health = 0
             boss_2.health = 0
             boss_3.health = 0
+            healbag.draw = false
+            portal.draw = false
             started = 0
             timers = { level_1 = 0, level_2 = 0, level_3 = 0, game_over = 0 }
             current_scene = 5 -- Game finished! No talk about that!
@@ -165,6 +187,8 @@ scenes = {
             boss_1.alive = false
             boss_2.alive = false
             boss_3.alive = true
+            healbag.draw = false
+            portal.draw = false
             boss_1.health = 0
             boss_2.health = 0
             started = 0
@@ -179,11 +203,14 @@ scenes = {
             boss_1.alive = false
             boss_2.alive = true
             boss_3.alive = true
+            healbag.draw = false
+            portal.draw = false
             boss_1.health = 0
             started = 0
             timers = { level_1 = 0, level_2 = 0, level_3 = 0, game_over = 0 }
             difficulty = rl.LoadStorageValue(DIFFICULTY)
             load_gameplay_info(difficulty)
+            ships = rl.LoadStorageValue(SHIPS)
             level = 2
             current_scene = 3
           else
@@ -271,7 +298,7 @@ scenes = {
     rl.BeginDrawing()
     rl.ClearBackground(rl.BLUE)
     rl.DrawText("GAME PAUSED", (rl.GetScreenWidth() - rl.MeasureText("GAME PAUSED", 128)) / 2, (rl.GetScreenHeight() - 128) / 2, 128, rl.WHITE)
-    rl.DrawText("[ESCAPE KEY]: RESUME", (rl.GetScreenWidth() - rl.MeasureText("[ESCAPE KEY]: RESUME", 32)) / 1.02, 32, 32, rl.WHITE)
+    rl.DrawText(back_text, (rl.GetScreenWidth() - rl.MeasureText(back_text, 32)) / 1.02, 32, 32, rl.WHITE)
     rl.EndDrawing()
     
     -- Get back to the game once escape key pressed!
@@ -279,6 +306,8 @@ scenes = {
       paused = false
       current_scene = 3
     end
+    
+    
     
     if draw_fps then rl.DrawFPS(10, 10) end
   end,
@@ -297,7 +326,7 @@ scenes = {
     rl.DrawText("THANKS FOR PLAYING!", (rl.GetScreenWidth() - rl.MeasureText("THANKS FOR PLAYING!", 96)) / 2, 128, 96, flash())
     rl.DrawText("YOUR SCORE IS: "..total, (rl.GetScreenWidth() - rl.MeasureText("YOUR SCORE IS: "..total , 32)) / 2, 256, 32, flash())
     
-    rl.DrawText("PRESS ESCAPE KEY TO GO TO MENU!", (rl.GetScreenWidth() - rl.MeasureText("PRESS SPACE/ESCAPE KEY TO GO TO MENU!", 32)) / 2, rl.GetScreenHeight() - 64, 32, flash())
+    rl.DrawText("PRESS ACTION KEY/BUTTON TO GO TO MENU!", (rl.GetScreenWidth() - rl.MeasureText("PRESS ACTION KEY/BUTTON TO GO TO MENU!", 32)) / 2, rl.GetScreenHeight() - 64, 32, flash())
     rl.EndDrawing()
     
     if ((not mouse_input and not gamepad_input and rl.IsKeyPressed(rl.KEY_ESCAPE))) or (gamepad_input and rl.IsGamepadAvailable(rl.GAMEPAD_PLAYER1) and rl.IsGamepadButtonPressed(rl.GAMEPAD_PLAYER1, rl.GAMEPAD_BUTTON_RIGHT_FACE_RIGHT)) or (mouse_input and rl.IsMouseButtonPressed(1)) then
@@ -355,9 +384,9 @@ scenes = {
         textfade = 0.0
         gameover_sound1 = 0
         gameover_sound2 = 0
+        choices = 4
       end
     end
-    
     rl.EndDrawing()
     timers.game_over = timers.game_over + speed
     if draw_fps then rl.DrawFPS(10, 10) end
@@ -372,7 +401,7 @@ scenes = {
     rl.DrawText("RABIA ALHAFFAR", (rl.GetScreenWidth() - rl.MeasureText("RABIA ALHAFFAR", 48)) / 1.5, rl.GetScreenHeight() / 4, 48, rl.RED)
     rl.DrawText("MADE WITH", (rl.GetScreenWidth() - rl.MeasureText("MADE WITH", 32)) / 2, rl.GetScreenHeight() / 2.6, 32, rl.WHITE)
     rl.DrawTexture(raylua_logo, (rl.GetScreenWidth() - raylua_logo.width) / 2, (rl.GetScreenHeight() - raylua_logo.height) / 1.5, rl.WHITE)
-    rl.DrawText("[ESCAPE KEY]: BACK", (rl.GetScreenWidth() - rl.MeasureText("[ESCAPE KEY]: BACK", 32)) / 1.02, 32, 32, rl.WHITE)
+    rl.DrawText(back_text, (rl.GetScreenWidth() - rl.MeasureText(back_text, 32)) / 1.02, 32, 32, rl.WHITE)
     rl.EndDrawing()
     
     if ((not mouse_input and not gamepad_input and rl.IsKeyPressed(rl.KEY_ESCAPE))) or (gamepad_input and rl.IsGamepadAvailable(rl.GAMEPAD_PLAYER1) and rl.IsGamepadButtonPressed(rl.GAMEPAD_PLAYER1, rl.GAMEPAD_BUTTON_RIGHT_FACE_RIGHT)) or (mouse_input and rl.IsMouseButtonPressed(1)) then

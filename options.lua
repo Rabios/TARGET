@@ -8,5 +8,5 @@ draw_fps = true                -- Draw frames per second on game screen
 flash_effects = true           -- Enables/Disables flash effects
 
 -- Input types
-mouse_input = false            -- Input with mouse instead of keyboard, Note that this disables keyboard input
+mouse_input = false             -- Input with mouse instead of keyboard, Note that this disables keyboard input
 gamepad_input = false          -- Input with gamepad instead of other input controls, Note that disables them

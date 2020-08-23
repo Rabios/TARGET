@@ -19,18 +19,48 @@ enemies = {
 
 enemies_bullets = {} -- When enemies shoot bullets, It stored here!
 
+function update_heal()
+  if healbag.draw then
+    healbag.x = healbag.x - speed
+    rl.DrawTexturePro(heal_image, rl.Rectangle(0, 0, heal_image.width, heal_image.height), rl.Rectangle(healbag.x, healbag.y, 64, 64), rl.Vector2(0, 0), 0, flash())
+    if rl.CheckCollisionRecs(rl.Rectangle(healbag.x, healbag.y, 64, 64), rl.Rectangle(player.x, player.y, player.w, player.h)) then
+      rl.PlaySound(heal_sound)
+      health = health + heal
+      if health >= 100 then
+        ships = ships + 1
+        health = health - 100
+      end
+      healbag.draw = false
+    end
+  end
+end
+
+function update_portal()
+  if portal.draw then
+    portal.x = portal.x - speed
+    rl.DrawTexturePro(portal_image, rl.Rectangle(0, 0, portal_image.width, portal_image.height), rl.Rectangle(portal.x, portal.y, 64, 64), rl.Vector2(0, 0), 0, flash())
+    if rl.CheckCollisionRecs(rl.Rectangle(portal.x, portal.y, 64, 64), rl.Rectangle(player.x, player.y, player.w, player.h)) then
+      portal.draw = false
+      paused = true
+      current_scene = 5
+    end
+  end
+end
+
 function decrease()
-  if difficulty == 1 then
+  if level == 1 then
     health = health - hit1_damage
-  elseif difficulty == 2 then
+  elseif level == 2 then
     health = health - hit2_damage
-  end  
+  elseif level == 3 then
+    health = health - hit3_damage
+  end
 end
 
 -- Generates level (Randomoly, Depending on algorithms and some stuff)
 function generate_enemies(difficulty)
   if difficulty == 1 then
-    for i = 1, 50, 1 do
+    for i = 1, 25, 1 do
       table.insert(enemies.level_1, {
         type = "eye",
         x = rl.GetScreenWidth() + (i * 200),
@@ -78,7 +108,7 @@ function generate_enemies(difficulty)
       })
     end
   elseif difficulty == 2 then
-    for i = 1, 100, 1 do
+    for i = 1, 25, 1 do
       table.insert(enemies.level_1, {
         type = "eye",
         x = rl.GetScreenWidth() + (i * 400),
@@ -175,6 +205,7 @@ function update_enemies()
       end
     
       -- When an enemy is dead, Left explosion!
+      if current_level_enemies[e] then
         if current_level_enemies[e].dead then
           if not (current_level_enemies[e].explosion_size >= 128) then
             rl.DrawTexturePro(explosion_image, rl.Rectangle(0, 0, explosion_image.width, explosion_image.height), rl.Rectangle(current_level_enemies[e].x, current_level_enemies[e].y, current_level_enemies[e].explosion_size, current_level_enemies[e].explosion_size), rl.Vector2(0, 0), 0, rl.WHITE)
@@ -196,7 +227,8 @@ function update_enemies()
         end
       end
     end
-    
+  end
+  
     -- TODO: Improve lose game
     if health <= 0 then
       if ships > 0 then
@@ -320,17 +352,18 @@ function draw_player()
     -- Draw player
     rl.DrawTexturePro(player.image, rl.Rectangle(0, 0, player.image.width, player.image.height), rl.Rectangle(player.x, player.y, player.w, player.h), rl.Vector2(0, 0), 0, player.tint)
     
-    -- Draw stats (Health, Level)
+    -- Draw stats (Health, Level, Ships)
     rl.DrawRectangle(32, 64, health, 16, rl.RED)
-    rl.DrawRectangleLines(32, 64, max_health, 16, rl.WHITE)
-    rl.DrawText("LEVEL "..level, 148, 64, 16, rl.WHITE)
+    rl.DrawRectangleLines(32, 64, max_health, 16, flash())
+    rl.DrawText("LEVEL "..level, 148, 64, 16, flash())
+    rl.DrawText("SHIPS: "..ships, 32, 96, 32, flash())
   end
 end
 
 -- Shoot logic
 function shoot()
-  table.insert(bullets, { x = player.x + 64, y = player.y })
-  table.insert(bullets, { x = player.x + 64, y = player.y + 48 })
+    table.insert(bullets, { x = player.x + 64, y = player.y })
+    table.insert(bullets, { x = player.x + 64, y = player.y + 48 })
 end
 
 function update_bullets()
