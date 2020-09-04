@@ -18,7 +18,7 @@ The game features short 3 levels that in total don't last more than over 10 to 2
 
 ### Running from source code
 
-Just grab LuaJIT compiler distribution/binaries (Like ULua), Then run `main.lua` with it.
+Just grab LuaJIT compiler distribution/binaries (Like [ULua](https://ulua.io)), Then run `main.lua` with it.
 
 The game should work on desktop with any OS and following architectures: x86 and x64.
 
