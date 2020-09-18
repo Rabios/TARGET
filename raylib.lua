@@ -1,8 +1,14 @@
 -- Written by Rabia Alhaffar in 12/August/2020
 -- raylua,Cross-Platform, Modern, And updated LuaJIT bindings for raylib library, Written by me from scratch.
--- Latest update: 18/August/2020 at 10:42 PM
+-- Latest update: 18/September/2020 at 1:45 PM
 
 ffi = require("ffi")   -- For bindings,We will use LuaJIT FFI,And getting OS to load library file also
+
+-- null implementation
+NUL = "\0"
+function NULL(v)
+  return v == nil
+end
 
 -- For SetTraceLogCallback function, We defined vsnprintf from C
 ffi.cdef([[
@@ -22,14 +28,18 @@ if ffi.os == "Windows" then
     lib = "libraylib32.dll"
   end
 elseif ffi.os == "OSX" then
-  lib = "libraylib.dylib"
+  lib = "./libraylib.dylib"
 else
   if ffi.arch == "x64" then
-    lib = "libraylib64.so"
+    lib = "./libraylib64.so"
   else
-    lib = "libraylib32.so"
+    lib = "./libraylib32.so"
   end
 end
+
+-- Uncomment the line below to run on Android
+-- If libraylib64_android_armaebi.so doesn't work try libraylib64_android_intel.so
+--lib = "libraylib64_android_armaebi.so"
 
 -- raylib.h
 ffi.cdef([[
